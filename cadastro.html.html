@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cadastro de Conselheira – CMEE Acirp</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --azul-acirp: #1a3a6b;
+    --azul-cmee: #003087;
+    --azul-claro: #2563b0;
+    --dourado: #c8960c;
+    --cinza-bg: #f4f6fa;
+    --cinza-borda: #d0d7e8;
+    --branco: #ffffff;
+    --texto: #1a1a2e;
+    --texto-muted: #5a6a8a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Open Sans', sans-serif; background: var(--cinza-bg); color: var(--texto); min-height: 100vh; padding: 2rem 1rem 4rem; }
+  .form-card { max-width: 680px; margin: 0 auto; background: var(--branco); border-radius: 16px; border: 1.5px solid var(--cinza-borda); overflow: hidden; }
+  .form-header { background: var(--azul-cmee); padding: 2rem 2rem 1.5rem; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .logo-area { display: flex; align-items: center; gap: 14px; }
+  .logo-circle { width: 52px; height: 52px; border-radius: 50%; background: var(--branco); display: flex; align-items: center; justify-content: center; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 10px; color: var(--azul-cmee); text-align: center; line-height: 1.2; padding: 6px; border: 2px solid rgba(255,255,255,0.4); }
+  .header-text { color: white; }
+  .header-text .acirp { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 22px; letter-spacing: 1px; }
+  .header-text .sub { font-size: 12px; opacity: 0.8; letter-spacing: 0.5px; }
+  .cmee-badge { background: var(--dourado); color: white; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 2px; padding: 5px 20px; border-radius: 4px; }
+  .form-title-bar { background: var(--azul-acirp); padding: 1rem 2rem; text-align: center; }
+  .form-title-bar h1 { font-family: 'Montserrat', sans-serif; font-weight: 600; color: white; font-size: 16px; letter-spacing: 0.5px; }
+  .form-title-bar .sub { color: rgba(255,255,255,0.75); font-size: 13px; margin-top: 4px; }
+  .form-body { padding: 2rem; }
+  .field-group { margin-bottom: 1.5rem; }
+  .field-label { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 13px; color: var(--azul-acirp); margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+  .field-input { width: 100%; padding: 11px 14px; border-radius: 8px; border: 1.5px solid var(--cinza-borda); font-family: 'Open Sans', sans-serif; font-size: 14px; color: var(--texto); outline: none; background: var(--branco); transition: border-color 0.15s; }
+  .field-input:focus { border-color: var(--azul-claro); }
+  .field-input::placeholder { color: var(--texto-muted); }
+  .field-hint { font-size: 11px; color: var(--texto-muted); margin-top: 4px; }
+  .divider { border: none; border-top: 1px solid var(--cinza-borda); margin: 1.5rem 0; }
+  .section-title { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 12px; color: var(--texto-muted); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 1.25rem; }
+  .submit-btn { width: 100%; padding: 14px; background: var(--azul-cmee); color: white; border: none; border-radius: 10px; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 1px; cursor: pointer; margin-top: 0.5rem; transition: background 0.2s; }
+  .submit-btn:hover { background: var(--azul-claro); }
+  .submit-btn:disabled { background: #aaa; cursor: not-allowed; }
+  .error-msg { display: none; color: #e74c3c; font-size: 12px; margin-top: 5px; }
+  .success-msg { display: none; text-align: center; padding: 3rem 2rem; }
+  .success-msg .check { font-size: 48px; margin-bottom: 1rem; }
+  .success-msg h2 { font-family: 'Montserrat', sans-serif; font-weight: 700; color: var(--azul-cmee); font-size: 20px; margin-bottom: 0.5rem; }
+  .success-msg p { color: var(--texto-muted); font-size: 14px; }
+
+  @media (max-width: 480px) { .form-body { padding: 1.25rem; } }
+</style>
+</head>
+<body>
+
+<div class="form-card">
+  <div class="form-header">
+    <div class="logo-area">
+      <div class="logo-circle">ACIRP<br>SJdRP</div>
+      <div class="header-text">
+        <div class="acirp">Acirp</div>
+        <div class="sub">São José do Rio Preto</div>
+      </div>
+    </div>
+    <div class="cmee-badge">CMEE</div>
+  </div>
+
+  <div class="form-title-bar">
+    <h1>Cadastro de Conselheira</h1>
+    <div class="sub">Conselho da Mulher Empresária e Empreendedora</div>
+  </div>
+
+  <div class="form-body" id="form-body">
+
+    <div class="section-title">Dados pessoais</div>
+
+    <div class="field-group">
+      <div class="field-label"><span>👤</span> Nome completo <span style="color:#e74c3c">*</span></div>
+      <input type="text" class="field-input" id="nome" placeholder="Seu nome completo" />
+      <div class="error-msg" id="err-nome">Por favor, preencha seu nome.</div>
+    </div>
+
+    <div class="field-group">
+      <div class="field-label"><span>📱</span> WhatsApp <span style="color:#e74c3c">*</span></div>
+      <input type="tel" class="field-input" id="whatsapp" placeholder="(17) 99999-9999" />
+      <div class="error-msg" id="err-whatsapp">Por favor, preencha seu WhatsApp.</div>
+    </div>
+
+    <hr class="divider">
+    <div class="section-title">Dados da empresa</div>
+
+    <div class="field-group">
+      <div class="field-label"><span>🏢</span> Nome da empresa <span style="color:#e74c3c">*</span></div>
+      <input type="text" class="field-input" id="empresa" placeholder="Nome da sua empresa" />
+      <div class="error-msg" id="err-empresa">Por favor, preencha o nome da empresa.</div>
+    </div>
+
+    <div class="field-group">
+      <div class="field-label"><span>💼</span> Produto / Serviço <span style="color:#e74c3c">*</span></div>
+      <input type="text" class="field-input" id="produto" placeholder="Ex: Consultoria financeira, moda feminina..." />
+      <div class="error-msg" id="err-produto">Por favor, preencha o produto ou serviço.</div>
+    </div>
+
+    <hr class="divider">
+    <div class="section-title">Redes sociais</div>
+
+    <div class="field-group">
+      <div class="field-label"><span>📸</span> Instagram</div>
+      <input type="url" class="field-input" id="instagram" placeholder="https://instagram.com/seuarroba" />
+      <div class="field-hint">Opcional — cole o link completo do seu perfil</div>
+    </div>
+
+    <button class="submit-btn" id="submit-btn" onclick="submitForm()">Fazer meu cadastro</button>
+
+  </div>
+
+  <div class="success-msg" id="success-msg">
+    <div class="check">💙</div>
+    <h2>Cadastro realizado!</h2>
+    <p>Bem-vinda ao CMEE, <span id="nome-confirmacao"></span>!<br>Estamos felizes em ter você conosco.</p>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// CONFIGURAÇÃO — substitua pela URL do seu Google Apps Script
+// ============================================================
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzeCWfE8VzcdCZbN0wN9grSbQRP8Y-kUK-OfOMmc4dqEz7blVtY2LHgNZ_wYLX3_nthCw/exec';
+// ============================================================
+
+function submitForm() {
+  let valid = true;
+  ['nome','whatsapp','empresa','produto'].forEach(id => {
+    const val = document.getElementById(id).value.trim();
+    document.getElementById('err-'+id).style.display = val ? 'none' : 'block';
+    if (!val) valid = false;
+  });
+  if (!valid) return;
+
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Enviando...';
+
+  const nome = document.getElementById('nome').value.trim();
+  const payload = {
+    nome,
+    empresa:   document.getElementById('empresa').value.trim(),
+    produto:   document.getElementById('produto').value.trim(),
+    whatsapp:  document.getElementById('whatsapp').value.trim(),
+    instagram: document.getElementById('instagram').value.trim(),
+    timestamp: new Date().toISOString()
+  };
+
+  document.getElementById('nome-confirmacao').textContent = nome.split(' ')[0];
+
+  fetch(SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  }).finally(() => {
+    document.getElementById('form-body').style.display = 'none';
+    document.getElementById('success-msg').style.display = 'block';
+  });
+}
+</script>
+</body>
+</html>
