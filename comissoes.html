@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comissões CMEE 2026 – Acirp</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --azul:#003C7E;--azul-med:#00509E;--azul-light:#D6E4F5;--azul-pale:#EDF4FB;
+  --roxo:#6B2D8B;--roxo-light:#EBD9F5;--roxo-pale:#F7F0FC;
+  --dourado:#C8960C;--dourado-light:#FDF3DC;
+  --branco:#FFFFFF;--bg:#F5F6FA;--borda:rgba(0,60,126,0.12);
+  --text:#1A1F36;--text-med:#5A6282;--text-light:#9CA3BF;
+  --verde:#1A6B40;--vermelho:#C0392B;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Open Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:0 0 4rem}
+
+/* HEADER */
+.header{background:var(--azul);padding:0}
+.header-top{max-width:720px;margin:0 auto;padding:1.5rem 1.5rem 1.2rem;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
+.logo-row{display:flex;align-items:center;gap:14px}
+.logo-circle{width:52px;height:52px;border-radius:50%;background:white;display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-weight:700;font-size:9px;color:var(--azul);text-align:center;line-height:1.2;padding:6px;border:2px solid rgba(255,255,255,0.4);flex-shrink:0}
+.logo-txt{color:white;text-align:left}
+.logo-txt .acirp{font-family:'Montserrat',sans-serif;font-weight:700;font-size:22px;letter-spacing:1px}
+.logo-txt .sub{font-size:12px;opacity:0.75;letter-spacing:0.5px}
+.cmee-badge{background:var(--roxo);color:white;font-family:'Montserrat',sans-serif;font-weight:700;font-size:12px;letter-spacing:2px;padding:5px 20px;border-radius:4px}
+.header-faixa{background:var(--roxo);text-align:center;padding:8px 1rem;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.9)}
+
+/* INTRO */
+.intro{max-width:720px;margin:0 auto;padding:2.5rem 1.5rem 0}
+.intro-card{background:var(--branco);border-radius:14px;border:1px solid var(--borda);overflow:hidden;margin-bottom:1.5rem}
+.intro-header{background:linear-gradient(135deg,var(--azul) 0%,var(--roxo) 100%);padding:2rem 2rem 1.5rem;text-align:center}
+.intro-header h1{font-family:'Montserrat',sans-serif;font-weight:800;font-size:clamp(20px,3.5vw,28px);color:white;line-height:1.2;margin-bottom:.5rem}
+.intro-header p{font-size:13px;color:rgba(255,255,255,0.8);letter-spacing:0.05em;text-transform:uppercase;font-weight:500}
+.intro-body{padding:1.75rem 2rem}
+.intro-body p{font-size:14px;line-height:1.75;color:var(--text-med);margin-bottom:1rem}
+.intro-body p:last-child{margin-bottom:0}
+.aviso{background:var(--dourado-light);border:1px solid var(--dourado);border-radius:10px;padding:1rem 1.25rem;font-size:13px;color:#7A5A06;line-height:1.6;margin-top:1.25rem}
+.aviso strong{color:#5A3E04;display:block;margin-bottom:4px;font-family:'Montserrat',sans-serif;font-size:13px}
+
+/* COMISSÕES */
+.comissoes-titulo{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:var(--text-med);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:1rem;padding-left:2px}
+.comissao-card{background:var(--branco);border-radius:14px;border:1px solid var(--borda);overflow:hidden;margin-bottom:1rem}
+.comissao-header{padding:1.1rem 1.4rem;display:flex;align-items:center;gap:12px;cursor:pointer;user-select:none}
+.comissao-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.icon-mkt{background:#EDF4FB}
+.icon-evt{background:#F7F0FC}
+.icon-con{background:#E8F8F1}
+.comissao-nome{font-family:'Montserrat',sans-serif;font-weight:700;font-size:14px;color:var(--azul);flex:1}
+.comissao-toggle{font-size:18px;color:var(--text-light);transition:transform .2s}
+.comissao-toggle.open{transform:rotate(180deg)}
+.comissao-body{display:none;padding:0 1.4rem 1.4rem;border-top:1px solid var(--borda)}
+.comissao-body.open{display:block}
+.comissao-body h4{font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;color:var(--text-med);letter-spacing:0.08em;text-transform:uppercase;margin:1rem 0 .5rem}
+.comissao-body ul{list-style:none;padding:0}
+.comissao-body ul li{font-size:13px;color:var(--text-med);line-height:1.6;padding:2px 0 2px 16px;position:relative}
+.comissao-body ul li::before{content:'•';position:absolute;left:0;color:var(--roxo);font-weight:700}
+.perfil-tag{display:inline-block;background:var(--roxo-pale);color:var(--roxo);border:1px solid var(--roxo-light);border-radius:20px;font-size:11px;font-weight:600;padding:3px 10px;margin:3px 3px 0 0}
+
+/* FORM */
+.form-wrap{max-width:720px;margin:0 auto;padding:0 1.5rem}
+.form-card{background:var(--branco);border-radius:14px;border:1px solid var(--borda);overflow:hidden;margin-bottom:1.25rem}
+.form-card-header{background:var(--azul);padding:1rem 1.5rem;display:flex;align-items:center;gap:10px}
+.step-num{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.2);border:1.5px solid rgba(255,255,255,0.4);color:white;font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.form-card-header h2{font-family:'Montserrat',sans-serif;font-weight:700;font-size:15px;color:white}
+.form-card-body{padding:1.5rem}
+
+/* Campos */
+.field{margin-bottom:1.25rem}
+.field:last-child{margin-bottom:0}
+.field label{display:block;font-family:'Montserrat',sans-serif;font-weight:600;font-size:13px;color:var(--azul);margin-bottom:.5rem}
+.field label .req{color:var(--roxo);margin-left:2px}
+.field input[type=text],
+.field input[type=email],
+.field input[type=tel],
+.field textarea{width:100%;padding:10px 14px;border:1.5px solid var(--borda);border-radius:8px;font-family:'Open Sans',sans-serif;font-size:14px;color:var(--text);outline:none;transition:.2s;background:var(--branco)}
+.field input:focus,
+.field textarea:focus{border-color:var(--azul);box-shadow:0 0 0 3px rgba(0,60,126,0.08)}
+.field input::placeholder,
+.field textarea::placeholder{color:var(--text-light)}
+.field textarea{min-height:110px;resize:vertical;line-height:1.6}
+
+/* Options */
+.opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:2px}
+.opt{padding:8px 16px;border-radius:8px;border:1.5px solid var(--borda);background:var(--branco);font-family:'Open Sans',sans-serif;font-size:13px;color:var(--text);cursor:pointer;transition:all .15s;line-height:1.4}
+.opt:hover{border-color:var(--roxo);background:var(--roxo-pale);color:var(--roxo)}
+.opt.sel{background:var(--roxo);border-color:var(--roxo);color:white}
+.opt.sel-azul{background:var(--azul);border-color:var(--azul);color:white}
+
+/* Comissão seleção */
+.comissao-opts{display:flex;flex-direction:column;gap:10px}
+.comissao-opt{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;border:1.5px solid var(--borda);border-radius:10px;cursor:pointer;transition:all .18s;background:var(--branco)}
+.comissao-opt:hover{border-color:var(--roxo);background:var(--roxo-pale)}
+.comissao-opt.sel{border-color:var(--roxo);background:var(--roxo-pale)}
+.comissao-opt .co-icon{font-size:20px;flex-shrink:0;margin-top:1px}
+.comissao-opt .co-body{flex:1}
+.comissao-opt .co-nome{font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;color:var(--azul);margin-bottom:3px}
+.comissao-opt .co-desc{font-size:12px;color:var(--text-med);line-height:1.5}
+.comissao-opt .co-check{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--borda);flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;transition:.15s}
+.comissao-opt.sel .co-check{background:var(--roxo);border-color:var(--roxo);color:white;font-size:11px}
+
+/* Error */
+.err{display:none;color:var(--vermelho);font-size:12px;margin-top:5px}
+
+/* Submit */
+.submit-area{max-width:720px;margin:0 auto;padding:0 1.5rem 1rem}
+.aviso-final{background:var(--azul-pale);border:1px solid var(--azul-light);border-radius:10px;padding:1rem 1.25rem;font-size:13px;color:var(--azul-med);line-height:1.65;margin-bottom:1.25rem}
+.submit-btn{width:100%;padding:15px;background:linear-gradient(135deg,var(--azul),var(--roxo));color:white;border:none;border-radius:10px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:15px;letter-spacing:1px;cursor:pointer;transition:opacity .2s}
+.submit-btn:hover{opacity:.9}
+.submit-btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* Success */
+.success{display:none;max-width:720px;margin:2rem auto;padding:0 1.5rem}
+.success-card{background:var(--branco);border-radius:14px;border:1px solid var(--borda);padding:3rem 2rem;text-align:center}
+.success-icon{font-size:52px;margin-bottom:1.2rem}
+.success-card h2{font-family:'Montserrat',sans-serif;font-weight:800;font-size:22px;color:var(--azul);margin-bottom:.75rem}
+.success-card p{font-size:14px;color:var(--text-med);line-height:1.7;max-width:440px;margin:0 auto}
+
+@media(max-width:540px){
+  .intro-body{padding:1.25rem}
+  .form-card-body{padding:1.25rem}
+  .comissao-opt{padding:12px}
+  .opts .opt{font-size:12px;padding:7px 12px}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div class="logo-row">
+      <div class="logo-circle">ACIRP<br>SJdRP</div>
+      <div class="logo-txt">
+        <div class="acirp">Acirp</div>
+        <div class="sub">São José do Rio Preto</div>
+      </div>
+    </div>
+    <div class="cmee-badge">CMEE</div>
+  </div>
+  <div class="header-faixa">Conselho da Mulher Empresária e Empreendedora</div>
+</div>
+
+<div class="intro">
+  <div class="intro-card">
+    <div class="intro-header">
+      <h1>Comissões CMEE 2026</h1>
+      <p>Formulário de Interesse</p>
+    </div>
+    <div class="intro-body">
+      <p>As comissões do CMEE foram criadas para fortalecer nosso conselho de forma colaborativa, estratégica e ativa.</p>
+      <p>Mais do que participar das reuniões, fazer parte de uma comissão significa contribuir diretamente para a construção das ações, projetos, eventos, conexões e crescimento do CMEE.</p>
+      <p>A participação é voluntária, mas exige comprometimento, disponibilidade e participação ativa nas entregas da comissão escolhida. Cada comissão terá encontros, alinhamentos e responsabilidades práticas ao longo do ano.</p>
+      <p>Nosso objetivo não é quantidade de participantes. É formar grupos engajados, colaborativos e protagonistas na construção do conselho que desejamos viver.</p>
+      <div class="aviso">
+        <strong>Leia antes de preencher</strong>
+        Antes de responder este formulário, leia com atenção as responsabilidades de cada comissão abaixo e responda com sinceridade sobre sua disponibilidade e interesse.
+      </div>
+    </div>
+  </div>
+
+  <div class="comissoes-titulo">Conheça as comissões</div>
+
+  <div class="comissao-card">
+    <div class="comissao-header" onclick="toggleComissao('mkt')">
+      <div class="comissao-icon icon-mkt">📢</div>
+      <div class="comissao-nome">Marketing e Comunicação</div>
+      <div class="comissao-toggle" id="toggle-mkt">▾</div>
+    </div>
+    <div class="comissao-body" id="body-mkt">
+      <h4>Responsabilidades</h4>
+      <ul>
+        <li>Instagram do CMEE</li>
+        <li>Divulgação institucional</li>
+        <li>Estratégias de visibilidade</li>
+        <li>Comunicação interna e externa</li>
+        <li>Relações públicas</li>
+        <li>Divulgação de nucleadas e negócios</li>
+        <li>Apoio na comunicação dos eventos e ações</li>
+      </ul>
+      <h4>Perfil ideal</h4>
+      <span class="perfil-tag">Comunicativa</span>
+      <span class="perfil-tag">Redes sociais</span>
+      <span class="perfil-tag">Criativa</span>
+      <span class="perfil-tag">Relacionamento</span>
+      <span class="perfil-tag">Posicionamento</span>
+    </div>
+  </div>
+
+  <div class="comissao-card">
+    <div class="comissao-header" onclick="toggleComissao('evt')">
+      <div class="comissao-icon icon-evt">🎯</div>
+      <div class="comissao-nome">Eventos</div>
+      <div class="comissao-toggle" id="toggle-evt">▾</div>
+    </div>
+    <div class="comissao-body" id="body-evt">
+      <h4>Responsabilidades</h4>
+      <ul>
+        <li>Organização dos eventos do CMEE</li>
+        <li>Triplo C, Rodada de Negócios, Arena Mulher</li>
+        <li>Participação do CMEE em eventos externos</li>
+        <li>Experiência das participantes</li>
+        <li>Apoio operacional e estratégico</li>
+      </ul>
+      <h4>Perfil ideal</h4>
+      <span class="perfil-tag">Organizada</span>
+      <span class="perfil-tag">Proativa</span>
+      <span class="perfil-tag">Planejamento</span>
+      <span class="perfil-tag">Trabalho em equipe</span>
+      <span class="perfil-tag">Alta demanda</span>
+    </div>
+  </div>
+
+  <div class="comissao-card">
+    <div class="comissao-header" onclick="toggleComissao('con')">
+      <div class="comissao-icon icon-con">🤝</div>
+      <div class="comissao-nome">Conexão e Associativismo</div>
+      <div class="comissao-toggle" id="toggle-con">▾</div>
+    </div>
+    <div class="comissao-body" id="body-con">
+      <h4>Responsabilidades</h4>
+      <ul>
+        <li>Networking entre nucleadas</li>
+        <li>Geração de negócios</li>
+        <li>Recepção de novas associadas</li>
+        <li>Integração e acolhimento</li>
+        <li>Ações de relacionamento e engajamento</li>
+        <li>Fortalecimento do associativismo</li>
+      </ul>
+      <h4>Perfil ideal</h4>
+      <span class="perfil-tag">Relacional</span>
+      <span class="perfil-tag">Conectora de pessoas</span>
+      <span class="perfil-tag">Acolhedora</span>
+      <span class="perfil-tag">Engajamento</span>
+    </div>
+  </div>
+</div>
+
+<div id="formulario">
+<div class="form-wrap">
+
+  <!-- BLOCO 1: IDENTIFICAÇÃO -->
+  <div class="form-card">
+    <div class="form-card-header">
+      <div class="step-num">1</div>
+      <h2>Identificação</h2>
+    </div>
+    <div class="form-card-body">
+      <div class="field">
+        <label>Nome completo <span class="req">*</span></label>
+        <input type="text" id="nome" placeholder="Seu nome completo">
+        <div class="err" id="err-nome">Campo obrigatório.</div>
+      </div>
+      <div class="field">
+        <label>Empresa / Negócio <span class="req">*</span></label>
+        <input type="text" id="empresa" placeholder="Nome da sua empresa ou negócio">
+        <div class="err" id="err-empresa">Campo obrigatório.</div>
+      </div>
+      <div class="field">
+        <label>WhatsApp <span class="req">*</span></label>
+        <input type="tel" id="whatsapp" placeholder="(17) 99999-9999">
+        <div class="err" id="err-whatsapp">Campo obrigatório.</div>
+      </div>
+      <div class="field">
+        <label>E-mail</label>
+        <input type="email" id="email" placeholder="seuemail@exemplo.com">
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOCO 2: COMISSÃO -->
+  <div class="form-card">
+    <div class="form-card-header">
+      <div class="step-num">2</div>
+      <h2>Comissão de interesse</h2>
+    </div>
+    <div class="form-card-body">
+      <div class="field">
+        <label>Qual comissão você deseja integrar? <span class="req">*</span></label>
+        <div class="comissao-opts" id="comissao-opts">
+          <div class="comissao-opt" onclick="selecionarComissao(this,'Marketing e Comunicação')">
+            <div class="co-icon">📢</div>
+            <div class="co-body">
+              <div class="co-nome">Marketing e Comunicação</div>
+              <div class="co-desc">Instagram, divulgação, comunicação e visibilidade do CMEE</div>
+            </div>
+            <div class="co-check"></div>
+          </div>
+          <div class="comissao-opt" onclick="selecionarComissao(this,'Eventos')">
+            <div class="co-icon">🎯</div>
+            <div class="co-body">
+              <div class="co-nome">Eventos</div>
+              <div class="co-desc">Organização, experiência e execução dos eventos do CMEE</div>
+            </div>
+            <div class="co-check"></div>
+          </div>
+          <div class="comissao-opt" onclick="selecionarComissao(this,'Conexão e Associativismo')">
+            <div class="co-icon">🤝</div>
+            <div class="co-body">
+              <div class="co-nome">Conexão e Associativismo</div>
+              <div class="co-desc">Networking, acolhimento e fortalecimento do associativismo</div>
+            </div>
+            <div class="co-check"></div>
+          </div>
+          <div class="comissao-opt" onclick="selecionarComissao(this,'Tenho interesse em mais de uma')">
+            <div class="co-icon">✨</div>
+            <div class="co-body">
+              <div class="co-nome">Tenho interesse em mais de uma</div>
+              <div class="co-desc">Quero contribuir onde o CMEE precisar mais de mim</div>
+            </div>
+            <div class="co-check"></div>
+          </div>
+        </div>
+        <div class="err" id="err-comissao">Por favor, selecione uma opção.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOCO 3: DISPONIBILIDADE -->
+  <div class="form-card">
+    <div class="form-card-header">
+      <div class="step-num">3</div>
+      <h2>Disponibilidade</h2>
+    </div>
+    <div class="form-card-body">
+
+      <div class="field">
+        <label>Quanto tempo você acredita conseguir dedicar mensalmente à comissão? <span class="req">*</span></label>
+        <div class="opts" id="tempo-opts">
+          <button class="opt" onclick="selecionarOpt(this,'tempo-opts','tempo')">Até 1h</button>
+          <button class="opt" onclick="selecionarOpt(this,'tempo-opts','tempo')">2h a 4h</button>
+          <button class="opt" onclick="selecionarOpt(this,'tempo-opts','tempo')">5h a 8h</button>
+          <button class="opt" onclick="selecionarOpt(this,'tempo-opts','tempo')">Mais de 8h</button>
+        </div>
+        <div class="err" id="err-tempo">Por favor, selecione uma opção.</div>
+      </div>
+
+      <div class="field">
+        <label>Você teria disponibilidade para reuniões extras eventualmente? <span class="req">*</span></label>
+        <div class="opts" id="reunioes-opts">
+          <button class="opt" onclick="selecionarOpt(this,'reunioes-opts','reunioes')">Sim</button>
+          <button class="opt" onclick="selecionarOpt(this,'reunioes-opts','reunioes')">Não</button>
+          <button class="opt" onclick="selecionarOpt(this,'reunioes-opts','reunioes')">Depende do horário</button>
+        </div>
+        <div class="err" id="err-reunioes">Por favor, selecione uma opção.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- BLOCO 4: PERFIL -->
+  <div class="form-card">
+    <div class="form-card-header">
+      <div class="step-num">4</div>
+      <h2>Seu perfil</h2>
+    </div>
+    <div class="form-card-body">
+
+      <div class="field">
+        <label>Você prefere: <span class="req">*</span></label>
+        <div class="opts" id="perfil-opts">
+          <button class="opt" onclick="selecionarOpt(this,'perfil-opts','perfil')">Planejar</button>
+          <button class="opt" onclick="selecionarOpt(this,'perfil-opts','perfil')">Executar</button>
+          <button class="opt" onclick="selecionarOpt(this,'perfil-opts','perfil')">Comunicar</button>
+          <button class="opt" onclick="selecionarOpt(this,'perfil-opts','perfil')">Conectar pessoas</button>
+          <button class="opt" onclick="selecionarOpt(this,'perfil-opts','perfil')">Organizar bastidores</button>
+          <button class="opt" onclick="selecionarOpt(this,'perfil-opts','perfil')">Criar ideias</button>
+        </div>
+        <div class="err" id="err-perfil">Por favor, selecione uma opção.</div>
+      </div>
+
+      <div class="field">
+        <label>Em qual situação você mais se identifica? <span class="req">*</span></label>
+        <div class="opts" id="identifica-opts">
+          <button class="opt" onclick="selecionarOpt(this,'identifica-opts','identifica')">Amo organizar eventos e fazer acontecer</button>
+          <button class="opt" onclick="selecionarOpt(this,'identifica-opts','identifica')">Gosto de conectar pessoas e gerar relacionamentos</button>
+          <button class="opt" onclick="selecionarOpt(this,'identifica-opts','identifica')">Tenho facilidade com comunicação e divulgação</button>
+          <button class="opt" onclick="selecionarOpt(this,'identifica-opts','identifica')">Gosto mais de apoiar nos bastidores</button>
+          <button class="opt" onclick="selecionarOpt(this,'identifica-opts','identifica')">Sou mais estratégica do que operacional</button>
+        </div>
+        <div class="err" id="err-identifica">Por favor, selecione uma opção.</div>
+      </div>
+
+      <div class="field">
+        <label>Você busca com essa participação: <span class="req">*</span></label>
+        <div class="opts" id="busca-opts">
+          <button class="opt" onclick="selecionarOpt(this,'busca-opts','busca')">Fazer networking</button>
+          <button class="opt" onclick="selecionarOpt(this,'busca-opts','busca')">Gerar impacto no CMEE</button>
+          <button class="opt" onclick="selecionarOpt(this,'busca-opts','busca')">Desenvolver liderança</button>
+          <button class="opt" onclick="selecionarOpt(this,'busca-opts','busca')">Fortalecer meu negócio</button>
+          <button class="opt" onclick="selecionarOpt(this,'busca-opts','busca')">Participar mais ativamente da Acirp</button>
+        </div>
+        <div class="err" id="err-busca">Por favor, selecione uma opção.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- BLOCO 5: MOTIVAÇÃO -->
+  <div class="form-card">
+    <div class="form-card-header">
+      <div class="step-num">5</div>
+      <h2>Sua motivação</h2>
+    </div>
+    <div class="form-card-body">
+      <div class="field">
+        <label>Por que você deseja fazer parte de uma comissão do CMEE? <span class="req">*</span></label>
+        <textarea id="motivacao" placeholder="Conte com suas palavras o que te move a participar..."></textarea>
+        <div class="err" id="err-motivacao">Por favor, preencha este campo.</div>
+      </div>
+      <div class="field">
+        <label>O que você acredita que pode contribuir ativamente para o grupo? <span class="req">*</span></label>
+        <textarea id="contribuicao" placeholder="Quais são suas habilidades, experiências ou recursos que podem somar ao CMEE?"></textarea>
+        <div class="err" id="err-contribuicao">Por favor, preencha este campo.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="submit-area">
+  <div class="aviso-final">
+    O preenchimento deste formulário não garante participação automática nas comissões. Nosso objetivo é construir grupos estratégicos, ativos e alinhados com as necessidades do CMEE e com a disponibilidade real de cada participante.
+  </div>
+  <button class="submit-btn" id="submit-btn" onclick="enviarFormulario()">Enviar meu interesse</button>
+</div>
+</div>
+
+<!-- SUCESSO -->
+<div class="success" id="success">
+  <div class="success-card">
+    <div class="success-icon">💜</div>
+    <h2>Interesse registrado!</h2>
+    <p>Obrigada por querer construir o CMEE junto com a gente.<br><br>
+    Analisaremos seu perfil e disponibilidade com cuidado. Em breve você receberá um retorno sobre a composição das comissões.</p>
+  </div>
+</div>
+
+<script>
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx3658R0g4ESzqTF67mk0_QftzVE5faYi3Q-r1ZDBVCAxtU-o5eanJEU9FvW1fd6qAoKg/exec';
+
+let valores = {
+  comissao:'', tempo:'', reunioes:'', perfil:'', identifica:'', busca:''
+};
+
+function toggleComissao(id) {
+  const body = document.getElementById('body-'+id);
+  const toggle = document.getElementById('toggle-'+id);
+  body.classList.toggle('open');
+  toggle.classList.toggle('open');
+}
+
+function selecionarComissao(el, val) {
+  document.querySelectorAll('.comissao-opt').forEach(o => {
+    o.classList.remove('sel');
+    o.querySelector('.co-check').textContent = '';
+  });
+  el.classList.add('sel');
+  el.querySelector('.co-check').textContent = '✓';
+  valores.comissao = val;
+  document.getElementById('err-comissao').style.display = 'none';
+}
+
+function selecionarOpt(el, grupoId, campo) {
+  document.getElementById(grupoId).querySelectorAll('.opt').forEach(o => o.classList.remove('sel'));
+  el.classList.add('sel');
+  valores[campo] = el.textContent;
+  document.getElementById('err-'+campo).style.display = 'none';
+}
+
+function enviarFormulario() {
+  let valido = true;
+
+  const campos = ['nome','empresa','whatsapp'];
+  campos.forEach(c => {
+    const el = document.getElementById(c);
+    if (!el.value.trim()) {
+      document.getElementById('err-'+c).style.display = 'block';
+      valido = false;
+    }
+  });
+
+  const selects = ['comissao','tempo','reunioes','perfil','identifica','busca'];
+  selects.forEach(c => {
+    if (!valores[c]) {
+      document.getElementById('err-'+c).style.display = 'block';
+      valido = false;
+    }
+  });
+
+  const textos = ['motivacao','contribuicao'];
+  textos.forEach(c => {
+    const el = document.getElementById(c);
+    if (!el.value.trim()) {
+      document.getElementById('err-'+c).style.display = 'block';
+      valido = false;
+    }
+  });
+
+  if (!valido) {
+    document.querySelector('.err[style*="block"]')?.scrollIntoView({behavior:'smooth',block:'center'});
+    return;
+  }
+
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Enviando...';
+
+  const payload = {
+    nome:         document.getElementById('nome').value.trim(),
+    empresa:      document.getElementById('empresa').value.trim(),
+    whatsapp:     document.getElementById('whatsapp').value.trim(),
+    email:        document.getElementById('email').value.trim(),
+    comissao:     valores.comissao,
+    tempo:        valores.tempo,
+    reunioes:     valores.reunioes,
+    perfil:       valores.perfil,
+    identifica:   valores.identifica,
+    busca:        valores.busca,
+    motivacao:    document.getElementById('motivacao').value.trim(),
+    contribuicao: document.getElementById('contribuicao').value.trim(),
+    timestamp:    new Date().toISOString()
+  };
+
+  fetch(SCRIPT_URL, {
+    method:'POST', mode:'no-cors',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify(payload)
+  }).finally(() => {
+    document.getElementById('formulario').style.display = 'none';
+    document.querySelector('.submit-area').style.display = 'none';
+    document.getElementById('success').style.display = 'block';
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+}
+</script>
+</body>
+</html>
