@@ -450,14 +450,34 @@ async function classificarComIA() {
   document.getElementById('comentarios-lista').innerHTML = '';
 
   try {
-    const url = SCRIPT_URL + '?action=classificar&comentarios=' + encodeURIComponent(JSON.stringify(comentarios));
-    const resp = await fetch(url);
-    const classificados = await resp.json();
+    // Usa JSONP para contornar CORS
+    const classificados = await new Promise((resolve, reject) => {
+      const cbName = 'cb_' + Date.now();
+      const script = document.createElement('script');
+      window[cbName] = (data) => {
+        delete window[cbName];
+        document.body.removeChild(script);
+        resolve(data);
+      };
+      script.onerror = () => reject(new Error('Erro no script'));
+      script.src = SCRIPT_URL
+        + '?action=classificar'
+        + '&comentarios=' + encodeURIComponent(JSON.stringify(comentarios))
+        + '&callback=' + cbName;
+      document.body.appendChild(script);
+      setTimeout(() => reject(new Error('Timeout')), 30000);
+    });
 
     const origens = dadosFiltrados.filter(d => d.comentario && String(d.comentario).trim().length > 3);
     comentariosClass = comentarios.map((c, i) => {
-      const cl = classificados.find(x => x.indice === i) || { tema: 'Outro', resumo: '' };
-      return { texto: c, tema: cl.tema, resumo: cl.resumo, nps: origens[i]?.nps, data: origens[i]?.dataFmt };
+      const cl = Array.isArray(classificados) ? classificados.find(x => x.indice === i) : null;
+      return {
+        texto: c,
+        tema: cl ? cl.tema : 'Outro',
+        resumo: cl ? cl.resumo : '',
+        nps: origens[i]?.nps,
+        data: origens[i]?.dataFmt
+      };
     });
     renderComentarios(comentariosClass, 'todos');
   } catch(err) {
