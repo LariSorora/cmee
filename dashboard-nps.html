@@ -292,8 +292,16 @@ function carregarDados() {
 }
 
 function fmtData(d) {
-  const p = d.split('-');
-  return p.length === 3 ? p[2]+'/'+p[1]+'/'+p[0] : d;
+  if (!d) return '';
+  try {
+    const dt = new Date(d);
+    if (!isNaN(dt)) {
+      return String(dt.getDate()).padStart(2,'0')+'/'+String(dt.getMonth()+1).padStart(2,'0')+'/'+dt.getFullYear();
+    }
+  } catch(e) {}
+  const p = String(d).split('-');
+  if (p.length === 3 && p[0].length === 4) return p[2]+'/'+p[1]+'/'+p[0];
+  return String(d);
 }
 
 function construirFiltros() {
@@ -432,34 +440,30 @@ function renderComparativo(r) {
 }
 
 async function classificarComIA() {
-  const comentarios=dadosFiltrados.map(d=>d.comentario).filter(c=>c&&String(c).trim().length>3);
-  if(!comentarios.length){
-    document.getElementById('comentarios-lista').innerHTML='<div class="empty-state">Nenhum comentário disponível para esta seleção.</div>';
+  const comentarios = dadosFiltrados.map(d => d.comentario).filter(c => c && String(c).trim().length > 3);
+  if (!comentarios.length) {
+    document.getElementById('comentarios-lista').innerHTML = '<div class="empty-state">Nenhum comentário disponível para esta seleção.</div>';
     return;
   }
-  document.getElementById('btn-ia').disabled=true;
-  document.getElementById('loading-ia').style.display='block';
-  document.getElementById('comentarios-lista').innerHTML='';
+  document.getElementById('btn-ia').disabled = true;
+  document.getElementById('loading-ia').style.display = 'block';
+  document.getElementById('comentarios-lista').innerHTML = '';
+
   try {
-    const resp=await fetch(SCRIPT_URL,{
-      method:'POST',mode:'no-cors',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:'classificar',comentarios})
+    const url = SCRIPT_URL + '?action=classificar&comentarios=' + encodeURIComponent(JSON.stringify(comentarios));
+    const resp = await fetch(url);
+    const classificados = await resp.json();
+
+    const origens = dadosFiltrados.filter(d => d.comentario && String(d.comentario).trim().length > 3);
+    comentariosClass = comentarios.map((c, i) => {
+      const cl = classificados.find(x => x.indice === i) || { tema: 'Outro', resumo: '' };
+      return { texto: c, tema: cl.tema, resumo: cl.resumo, nps: origens[i]?.nps, data: origens[i]?.dataFmt };
     });
-    // no-cors não retorna body; usar JSONP via GET
-    const url=SCRIPT_URL+'?action=classificar&c='+encodeURIComponent(JSON.stringify(comentarios));
-    const r2=await fetch(url);
-    const classificados=await r2.json();
-    comentariosClass=comentarios.map((c,i)=>{
-      const cl=classificados.find(x=>x.indice===i)||{tema:'Outro',resumo:''};
-      const orig=dadosFiltrados.filter(d=>d.comentario&&d.comentario.trim().length>3)[i];
-      return{texto:c,tema:cl.tema,resumo:cl.resumo,nps:orig?.nps,data:orig?.dataFmt};
-    });
-    renderComentarios(comentariosClass,'todos');
+    renderComentarios(comentariosClass, 'todos');
   } catch(err) {
-    document.getElementById('loading-ia').style.display='none';
-    document.getElementById('comentarios-lista').innerHTML='<div class="empty-state" style="color:var(--vermelho)">Erro ao classificar. Tente novamente.</div>';
-    document.getElementById('btn-ia').disabled=false;
+    document.getElementById('loading-ia').style.display = 'none';
+    document.getElementById('comentarios-lista').innerHTML = '<div class="empty-state" style="color:var(--vermelho)">Erro ao classificar. Tente novamente.</div>';
+    document.getElementById('btn-ia').disabled = false;
   }
 }
 
