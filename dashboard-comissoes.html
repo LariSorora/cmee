@@ -221,11 +221,12 @@ function carregarDados() {
   document.getElementById('loading').style.display = 'block';
   document.getElementById('conteudo').style.display = 'none';
 
-  const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(SCRIPT_URL);
+  const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(SCRIPT_URL);
 
   fetch(proxyUrl)
     .then(r => r.json())
-    .then(data => {
+    .then(res => {
+      const data = JSON.parse(res.contents);
       dadosGlobais = data;
       renderizar(data);
       document.getElementById('updated-info').textContent =
