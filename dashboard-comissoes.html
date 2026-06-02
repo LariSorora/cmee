@@ -115,10 +115,10 @@ function init() {
   document.getElementById('loading').style.display = 'block';
   document.getElementById('app').style.display = 'none';
 
-  fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(URL_SCRIPT))
+  fetch(URL_SCRIPT)
     .then(r => r.json())
-    .then(res => {
-      todos = JSON.parse(res.contents);
+    .then(data => {
+      todos = data;
       montar();
       document.getElementById('atualizado').textContent = 'Última atualização: ' + new Date().toLocaleString('pt-BR');
       document.getElementById('loading').style.display = 'none';
