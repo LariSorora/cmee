@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -274,12 +273,11 @@ function carregarDados() {
   document.getElementById('loading-geral').style.display = 'block';
   document.getElementById('conteudo').style.display = 'none';
 
-  const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(SCRIPT_URL);
+  const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(SCRIPT_URL);
 
   fetch(proxyUrl)
     .then(r => r.json())
-    .then(res => {
-      const data = JSON.parse(res.contents);
+    .then(data => {
       dadosGlobais = data.map(d => ({ ...d, nps: Number(d.nps), dataFmt: fmtData(String(d.data)), tema: String(d.tema||'').toLowerCase().trim() }));
       construirFiltros();
       aplicarFiltro('todas');
