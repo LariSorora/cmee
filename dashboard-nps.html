@@ -273,7 +273,7 @@ function carregarDados() {
   document.getElementById('loading-geral').style.display = 'block';
   document.getElementById('conteudo').style.display = 'none';
 
-  const proxyUrl = 'https://corsproxy.io/?url=' + encodeURIComponent(SCRIPT_URL);
+  const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(SCRIPT_URL);
 
   fetch(proxyUrl)
     .then(r => r.json())
@@ -460,7 +460,6 @@ function mostrarComentarios() {
 }
 
 function renderComentarios(lista,tema) {
-  document.getElementById('loading-ia'.style.display='none';
   const counts={};
   lista.forEach(c=>{counts[c.tema]=(counts[c.tema]||0)+1;});
   const pe=document.getElementById('temas-pills');
