@@ -273,7 +273,7 @@ function carregarDados() {
   document.getElementById('loading-geral').style.display = 'block';
   document.getElementById('conteudo').style.display = 'none';
 
-  const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(SCRIPT_URL);
+  const proxyUrl = 'https://corsproxy.io/?url=' + encodeURIComponent(SCRIPT_URL);
 
   fetch(proxyUrl)
     .then(r => r.json())
