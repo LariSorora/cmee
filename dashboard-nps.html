@@ -253,15 +253,11 @@ main{max-width:1200px;margin:0 auto;padding:1.75rem 1.5rem 5rem}
     <div class="comentarios-wrap">
       <div class="comentarios-header">
         <div class="sec-titulo"><span></span>Análise de Comentários com IA</div>
-        <button class="btn-classificar" id="btn-ia" onclick="classificarComIA()">✦ Classificar com IA</button>
+        <button class="btn-classificar" id="btn-ia" onclick="mostrarComentarios()">↻ Atualizar</button>
       </div>
-      <div id="loading-ia" class="loading-ia">
-        <div class="loading-ia-spin"></div>
-        <p>Analisando comentários...<br><small>Isso pode levar alguns segundos.</small></p>
-      </div>
-      <div id="temas-pills" class="temas-pills" style="display:none"></div>
+      <div id="temas-pills" class="temas-pills"></div>
       <div class="comentarios-lista" id="comentarios-lista">
-        <div class="empty-state">Clique em "Classificar com IA" para organizar os comentários por tema.</div>
+        <div class="empty-state">Carregando comentários...</div>
       </div>
     </div>
   </div>
@@ -276,10 +272,13 @@ let comentariosClass = null, charts = {};
 function carregarDados() {
   document.getElementById('loading-geral').style.display = 'block';
   document.getElementById('conteudo').style.display = 'none';
-  fetch(SCRIPT_URL)
+
+  const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(SCRIPT_URL);
+
+  fetch(proxyUrl)
     .then(r => r.json())
     .then(data => {
-      dadosGlobais = data.map(d => ({ ...d, nps: Number(d.nps), dataFmt: fmtData(String(d.data)) }));
+      dadosGlobais = data.map(d => ({ ...d, nps: Number(d.nps), dataFmt: fmtData(String(d.data)), tema: String(d.tema||'').toLowerCase().trim() }));
       construirFiltros();
       aplicarFiltro('todas');
       document.getElementById('updated').textContent = 'Última atualização: ' + new Date().toLocaleString('pt-BR');
@@ -341,12 +340,11 @@ function aplicarFiltro(val) {
     : (dadosFiltrados[0]?.dataFmt||'') + (dadosFiltrados[0]?.tema?' · '+dadosFiltrados[0].tema:'');
   document.getElementById('termo-periodo').textContent = lbl;
   comentariosClass = null;
-  document.getElementById('temas-pills').style.display = 'none';
   document.getElementById('temas-pills').innerHTML = '';
-  document.getElementById('comentarios-lista').innerHTML = '<div class="empty-state">Clique em "Classificar com IA" para organizar os comentários por tema.</div>';
   document.getElementById('btn-ia').disabled = false;
-  document.getElementById('btn-ia').textContent = '✦ Classificar com IA';
+  document.getElementById('btn-ia').textContent = '↻ Atualizar';
   renderMetricas(dadosFiltrados);
+  mostrarComentarios();
 }
 
 function renderMetricas(d) {
@@ -439,64 +437,25 @@ function renderComparativo(r) {
   });
 }
 
-async function classificarComIA() {
-  const comentarios = dadosFiltrados.map(d => d.comentario).filter(c => c && String(c).trim().length > 3);
-  if (!comentarios.length) {
-    document.getElementById('comentarios-lista').innerHTML = '<div class="empty-state">Nenhum comentário disponível para esta seleção.</div>';
+function mostrarComentarios() {
+  // Pega comentários dos dados filtrados, já com temaIA da planilha
+  const lista = dadosFiltrados
+    .filter(d => d.comentario && String(d.comentario).trim().length > 3)
+    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)) // mais recentes primeiro
+    .map(d => ({
+      texto: d.comentario,
+      tema: d.temaIA || 'Sem classificação',
+      nps: d.nps,
+      data: d.dataFmt
+    }));
+
+  if (!lista.length) {
+    document.getElementById('comentarios-lista').innerHTML = '<div class="empty-state">Nenhum comentário disponível.</div>';
+    document.getElementById('temas-pills').innerHTML = '';
     return;
   }
-  document.getElementById('btn-ia').disabled = true;
-  document.getElementById('loading-ia').style.display = 'block';
-  document.getElementById('comentarios-lista').innerHTML = '';
 
-  // Usa JSONP para chamar o Apps Script
-  const cbName = 'jsonpCb_' + Date.now();
-  const timeout = setTimeout(() => {
-    delete window[cbName];
-    document.getElementById('loading-ia').style.display = 'none';
-    document.getElementById('comentarios-lista').innerHTML = '<div class="empty-state" style="color:var(--vermelho)">Tempo esgotado. Tente novamente.</div>';
-    document.getElementById('btn-ia').disabled = false;
-  }, 60000);
-
-  // Primeiro envia os comentários via POST para o Apps Script classificar
-  // Depois busca o resultado via JSONP
-  try {
-    // Passo 1: envia para classificar via fetch (no-cors, só dispara)
-    await fetch(SCRIPT_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'classificar_store', comentarios, cbKey: cbName })
-    });
-
-    // Passo 2: busca resultado via JSONP após 3s
-    await new Promise(r => setTimeout(r, 3000));
-
-    const classificados = await new Promise((resolve, reject) => {
-      const script = document.createElement('script');
-      window[cbName] = (data) => {
-        clearTimeout(timeout);
-        delete window[cbName];
-        document.body.removeChild(script);
-        resolve(data);
-      };
-      script.onerror = () => { clearTimeout(timeout); reject(new Error('Erro')); };
-      script.src = SCRIPT_URL + '?action=get_result&cbKey=' + cbName + '&callback=' + cbName;
-      document.body.appendChild(script);
-    });
-
-    const origens = dadosFiltrados.filter(d => d.comentario && String(d.comentario).trim().length > 3);
-    comentariosClass = comentarios.map((c, i) => {
-      const cl = Array.isArray(classificados) ? classificados.find(x => x.indice === i) : null;
-      return { texto: c, tema: cl ? cl.tema : 'Outro', resumo: cl ? cl.resumo : '', nps: origens[i]?.nps, data: origens[i]?.dataFmt };
-    });
-    renderComentarios(comentariosClass, 'todos');
-  } catch(err) {
-    clearTimeout(timeout);
-    document.getElementById('loading-ia').style.display = 'none';
-    document.getElementById('comentarios-lista').innerHTML = '<div class="empty-state" style="color:var(--vermelho)">Erro ao classificar. Tente novamente.</div>';
-    document.getElementById('btn-ia').disabled = false;
-  }
+  renderComentarios(lista, 'todos');
 }
 
 function renderComentarios(lista,tema) {
