@@ -273,11 +273,12 @@ function carregarDados() {
   document.getElementById('loading-geral').style.display = 'block';
   document.getElementById('conteudo').style.display = 'none';
 
-  const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(SCRIPT_URL);
+  const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(SCRIPT_URL);
 
   fetch(proxyUrl)
     .then(r => r.json())
-    .then(data => {
+    .then(res => {
+      const data = JSON.parse(res.contents);
       dadosGlobais = data.map(d => ({ ...d, nps: Number(d.nps), dataFmt: fmtData(String(d.data)), tema: String(d.tema||'').toLowerCase().trim() }));
       construirFiltros();
       aplicarFiltro('todas');
