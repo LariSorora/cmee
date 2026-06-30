@@ -278,8 +278,7 @@ function carregarDados() {
     .then(r => r.json())
     .then(res => {
       const data = JSON.parse(res.contents);
-      dadosGlobais = data.map(d => ({         data:       d.data      || d['Data']      || '',         tema:       String(d.tema || d['Tema'] || '').toLowerCase().trim(),         nps:        Number(d.nps  || d['NPS']  || 0),         agrega:     d.agrega    || d['O que agregou'] || '',         duracao:    d.duracao   || d['Duração'] || '',         insight:    d.insight   || d['Insight'] || '',         comentario: d.comentario|| d['Comentário'] || '',         timestamp:  d.timestamp || d['Timestamp'] || '',         temaIA:     d.temaIA    || d['Tema IA'] || '',         dataFmt:    fmtData(String(d.data || d['Data'] || ''))       }));, dataFmt: fmtData(String(d.data)), tema: String(d.tema||'').toLowerCase().trim() }));
-      construirFiltros();
+      dadosGlobais = data.map(d => ({         data:       d.data      || d['Data']      || '',         tema:       String(d.tema || d['Tema'] || '').toLowerCase().trim(),         nps:        Number(d.nps  || d['NPS']  || 0),         agrega:     d.agrega    || d['O que agregou'] || '',         duracao:    d.duracao   || d['Duração'] || '',         insight:    d.insight   || d['Insight'] || '',         comentario: d.comentario|| d['Comentário'] || '',         timestamp:  d.timestamp || d['Timestamp'] || '',         temaIA:     d.temaIA    || d['Tema IA'] || '',         dataFmt:    fmtData(String(d.data || d['Data'] || ''))         construirFiltros();
       aplicarFiltro('todas');
       document.getElementById('updated').textContent = 'Última atualização: ' + new Date().toLocaleString('pt-BR');
       document.getElementById('loading-geral').style.display = 'none';
