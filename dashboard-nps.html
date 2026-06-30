@@ -272,12 +272,21 @@ function carregarDados() {
   document.getElementById('loading-geral').style.display = 'block';
   document.getElementById('conteudo').style.display = 'none';
 
-  const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(SCRIPT_URL);
+  const proxies = [
+    url => 'https://api.allorigins.win/get?url=' + encodeURIComponent(url),
+    url => 'https://corsproxy.io/?' + encodeURIComponent(url)
+  ];
 
-  fetch(proxyUrl)
-    .then(r => r.json())
-    .then(res => {
-      const data = JSON.parse(res.contents);
+  function tentarProxy(idx) {
+    if (idx >= proxies.length) {
+      document.getElementById('loading-geral').innerHTML = '<p style="color:var(--vermelho)">Erro ao carregar dados. Verifique a URL do script.</p>';
+      return;
+    }
+    fetch(proxies[idx](SCRIPT_URL))
+      .then(r => r.json())
+      .then(res => {
+        const raw = res.contents !== undefined ? res.contents : JSON.stringify(res);
+        const data = JSON.parse(raw);
       dadosGlobais = data.map(d => ({
         data:       d.data      || d['Data']      || '',
         tema:       String(d.tema || d['Tema'] || '').toLowerCase().trim(),
@@ -296,9 +305,10 @@ function carregarDados() {
       document.getElementById('loading-geral').style.display = 'none';
       document.getElementById('conteudo').style.display = 'block';
     })
-    .catch(() => {
-      document.getElementById('loading-geral').innerHTML = '<p style="color:var(--vermelho)">Erro ao carregar dados. Verifique a URL do script.</p>';
-    });
+    .catch(() => tentarProxy(idx + 1));
+  }
+
+  tentarProxy(0);
 }
 
 function fmtData(d) {
@@ -513,12 +523,4 @@ function mkChart(id,tipo,labels,valores,cores,horizontal){
     type:tipo,
     data:{labels,datasets:[{data:valores,backgroundColor:bg,borderWidth:tipo==='doughnut'?2:0,borderColor:'#fff',borderRadius:tipo==='bar'?6:0}]},
     options:{indexAxis:horizontal?'y':'x',responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:tipo==='doughnut',position:'bottom',labels:{font:{family:'Open Sans',size:11},padding:10,boxWidth:12}}},
-      scales:tipo==='bar'?{x:{grid:{display:!horizontal},ticks:{font:{size:11}}},y:{grid:{display:horizontal,color:'rgba(0,0,0,0.05)'},ticks:{font:{size:11},stepSize:1}}}:{}}
-  });
-}
-
-carregarDados();
-</script>
-</body>
-</html>
+      plugins:{legend:{display:tipo==='doughnut',position:'bottom',label
