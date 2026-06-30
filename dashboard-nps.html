@@ -273,17 +273,23 @@ function carregarDados() {
   document.getElementById('conteudo').style.display = 'none';
 
   const proxies = [
-    url => url,
     url => 'https://corsproxy.io/?' + encodeURIComponent(url),
     url => 'https://api.allorigins.win/get?url=' + encodeURIComponent(url)
   ];
+
+  function fetchComTimeout(url, ms) {
+    return Promise.race([
+      fetch(url),
+      new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), ms))
+    ]);
+  }
 
   function tentarProxy(idx) {
     if (idx >= proxies.length) {
       document.getElementById('loading-geral').innerHTML = '<p style="color:var(--vermelho)">Erro ao carregar dados. Verifique a URL do script.</p>';
       return;
     }
-    fetch(proxies[idx](SCRIPT_URL))
+    fetchComTimeout(proxies[idx](SCRIPT_URL), 8000)
       .then(r => r.json())
       .then(res => {
         const raw = res.contents !== undefined ? res.contents : JSON.stringify(res);
