@@ -3,244 +3,522 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pesquisa NPS – CMEE Acirp</title>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;500&display=swap" rel="stylesheet">
+<title>Dashboard NPS – CMEE Acirp</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Open+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-  :root {
-    --azul-acirp: #1a3a6b;
-    --azul-cmee: #003087;
-    --azul-claro: #2563b0;
-    --dourado: #c8960c;
-    --cinza-bg: #f4f6fa;
-    --cinza-borda: #d0d7e8;
-    --branco: #ffffff;
-    --texto: #1a1a2e;
-    --texto-muted: #5a6a8a;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Open Sans', sans-serif; background: var(--cinza-bg); color: var(--texto); min-height: 100vh; padding: 2rem 1rem 4rem; }
-  .form-card { max-width: 680px; margin: 0 auto; background: var(--branco); border-radius: 16px; border: 1.5px solid var(--cinza-borda); overflow: hidden; }
-  .form-header { background: var(--azul-cmee); padding: 2rem 2rem 1.5rem; display: flex; flex-direction: column; align-items: center; gap: 12px; }
-  .logo-area { display: flex; align-items: center; gap: 14px; }
-  .logo-circle { width: 52px; height: 52px; border-radius: 50%; background: var(--branco); display: flex; align-items: center; justify-content: center; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 10px; color: var(--azul-cmee); text-align: center; line-height: 1.2; padding: 6px; border: 2px solid rgba(255,255,255,0.4); }
-  .header-text { color: white; }
-  .header-text .acirp { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 22px; letter-spacing: 1px; }
-  .header-text .sub { font-size: 12px; opacity: 0.8; letter-spacing: 0.5px; }
-  .cmee-badge { background: var(--dourado); color: white; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 2px; padding: 5px 20px; border-radius: 4px; }
-  .form-title-bar { background: var(--azul-acirp); padding: 1rem 2rem; text-align: center; }
-  .form-title-bar h1 { font-family: 'Montserrat', sans-serif; font-weight: 600; color: white; font-size: 16px; letter-spacing: 0.5px; }
-  .reuniao-info { color: rgba(255,255,255,0.75); font-size: 13px; margin-top: 4px; }
-  .form-body { padding: 2rem; }
-  .form-section { margin-bottom: 2rem; padding-bottom: 2rem; border-bottom: 1px solid var(--cinza-borda); }
-  .form-section:last-of-type { border-bottom: none; margin-bottom: 0.5rem; }
-  .section-num { display: inline-block; background: var(--azul-cmee); color: white; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 11px; width: 22px; height: 22px; border-radius: 50%; text-align: center; line-height: 22px; margin-right: 8px; flex-shrink: 0; }
-  .section-label { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 14px; color: var(--azul-acirp); margin-bottom: 1rem; display: flex; align-items: flex-start; }
-  .nps-row { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
-  .nps-btn { width: 46px; height: 46px; border-radius: 8px; border: 1.5px solid var(--cinza-borda); background: var(--branco); font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 16px; color: var(--texto); cursor: pointer; transition: all 0.15s; }
-  .nps-btn:hover { border-color: var(--azul-claro); color: var(--azul-claro); background: #eef3fc; }
-  .nps-btn.sel-red { background: #e74c3c; border-color: #e74c3c; color: white; }
-  .nps-btn.sel-yellow { background: #f39c12; border-color: #f39c12; color: white; }
-  .nps-btn.sel-green { background: #27ae60; border-color: #27ae60; color: white; }
-  .nps-legend { display: flex; justify-content: space-between; margin-top: 8px; font-size: 11px; color: var(--texto-muted); }
-  .options-grid { display: flex; flex-wrap: wrap; gap: 10px; }
-  .opt-btn { padding: 8px 16px; border-radius: 8px; border: 1.5px solid var(--cinza-borda); background: var(--branco); font-family: 'Open Sans', sans-serif; font-size: 13px; color: var(--texto); cursor: pointer; transition: all 0.15s; }
-  .opt-btn:hover { border-color: var(--azul-claro); background: #eef3fc; }
-  .opt-btn.selected { background: var(--azul-cmee); border-color: var(--azul-cmee); color: white; }
-  .outro-input { width: 100%; margin-top: 10px; padding: 10px 14px; border-radius: 8px; border: 1.5px solid var(--cinza-borda); font-family: 'Open Sans', sans-serif; font-size: 13px; color: var(--texto); outline: none; display: none; }
-  .outro-input:focus { border-color: var(--azul-claro); }
-  .textarea-field { width: 100%; min-height: 110px; padding: 12px 14px; border-radius: 8px; border: 1.5px solid var(--cinza-borda); font-family: 'Open Sans', sans-serif; font-size: 13px; color: var(--texto); resize: vertical; outline: none; background: var(--branco); }
-  .textarea-field:focus { border-color: var(--azul-claro); }
-  .textarea-field::placeholder { color: var(--texto-muted); }
-  .submit-btn { width: 100%; padding: 14px; background: var(--azul-cmee); color: white; border: none; border-radius: 10px; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 1px; cursor: pointer; margin-top: 1.5rem; transition: background 0.2s; }
-  .submit-btn:hover { background: var(--azul-claro); }
-  .submit-btn:disabled { background: #aaa; cursor: not-allowed; }
-  .success-msg { display: none; text-align: center; padding: 3rem 2rem; }
-  .success-msg .check { font-size: 48px; margin-bottom: 1rem; }
-  .success-msg h2 { font-family: 'Montserrat', sans-serif; font-weight: 700; color: var(--azul-cmee); font-size: 20px; margin-bottom: 0.5rem; }
-  .success-msg p { color: var(--texto-muted); font-size: 14px; }
-  .error-msg { display: none; color: #e74c3c; font-size: 12px; margin-top: 6px; }
-  @media (max-width: 480px) {
-    .nps-btn { width: 38px; height: 38px; font-size: 14px; }
-    .form-body { padding: 1.25rem; }
-  }
+:root{
+  --azul:#003C7E;--azul-med:#00509E;--azul-light:#D6E4F5;--azul-pale:#EDF4FB;
+  --roxo:#6B2D8B;--roxo-light:#EBD9F5;--roxo-pale:#F7F0FC;
+  --verde:#1A6B40;--verde-light:#E8F8F1;
+  --amarelo:#C8960C;--amarelo-light:#FDF3DC;
+  --vermelho:#C0392B;--vermelho-light:#FDECEA;
+  --branco:#FFF;--bg:#F5F6FA;--borda:rgba(0,60,126,0.12);
+  --text:#1A1F36;--text-med:#5A6282;--text-light:#9CA3BF;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Open Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.header{background:var(--azul);position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,0.2)}
+.h-top{max-width:1200px;margin:0 auto;padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:64px;gap:1rem;flex-wrap:wrap}
+.logo-wrap{display:flex;align-items:center;gap:12px}
+.logo-circle{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,0.15);border:1.5px solid rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-weight:800;font-size:8px;color:white;text-align:center;line-height:1.2;padding:4px;flex-shrink:0}
+.logo-txt{color:white}
+.logo-txt b{font-family:'Montserrat',sans-serif;font-size:14px;font-weight:700;display:block}
+.logo-txt small{font-size:11px;opacity:.7}
+.h-right{display:flex;align-items:center;gap:10px}
+.badge-nps{background:var(--roxo);color:white;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px}
+.btn-refresh{background:rgba(255,255,255,0.15);border:1.5px solid rgba(255,255,255,0.25);border-radius:8px;color:white;font-size:12px;font-weight:600;padding:6px 12px;cursor:pointer;transition:.18s;font-family:'Open Sans',sans-serif}
+.btn-refresh:hover{background:rgba(255,255,255,0.25)}
+.h-faixa{background:var(--roxo);text-align:center;padding:5px;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,0.9)}
+.filtro-bar{background:var(--branco);border-bottom:1px solid var(--borda);padding:.9rem 1.5rem;position:sticky;top:84px;z-index:90}
+.filtro-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.filtro-label{font-size:11px;font-weight:700;color:var(--text-med);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+.filtro-pills{display:flex;gap:6px;flex-wrap:wrap;flex:1}
+.pill{padding:5px 14px;border-radius:20px;border:1.5px solid var(--borda);background:transparent;font-family:'Open Sans',sans-serif;font-size:12px;font-weight:600;color:var(--text-med);cursor:pointer;transition:.15s;white-space:nowrap}
+.pill:hover{border-color:var(--roxo);color:var(--roxo);background:var(--roxo-pale)}
+.pill.ativo{background:var(--roxo);color:white;border-color:var(--roxo)}
+main{max-width:1200px;margin:0 auto;padding:1.75rem 1.5rem 5rem}
+.termometro-wrap{background:var(--branco);border-radius:14px;border:1px solid var(--borda);padding:1.75rem;margin-bottom:1.5rem}
+.termometro-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem}
+.sec-titulo{font-family:'Montserrat',sans-serif;font-weight:700;font-size:15px;color:var(--azul);display:flex;align-items:center;gap:8px}
+.sec-titulo span{width:4px;height:18px;background:var(--roxo);border-radius:2px;display:inline-block}
+.termometro-grid{display:grid;grid-template-columns:auto 1fr auto;gap:1.5rem;align-items:center}
+.termo-gauge{text-align:center}
+.termo-score{font-family:'Montserrat',sans-serif;font-size:56px;font-weight:800;line-height:1;color:var(--verde)}
+.termo-label{font-size:12px;color:var(--text-med);margin-top:4px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.termo-barra-bg{height:28px;border-radius:20px;background:linear-gradient(90deg,#C0392B 0%,#E67E22 30%,#F1C40F 50%,#2ECC71 70%,#27AE60 100%);position:relative;overflow:hidden;box-shadow:inset 0 2px 4px rgba(0,0,0,0.1)}
+.termo-barra-marker{position:absolute;top:-6px;width:4px;height:40px;background:var(--text);border-radius:2px;transform:translateX(-50%);transition:left 1s ease;box-shadow:0 2px 6px rgba(0,0,0,0.3)}
+.termo-barra-labels{display:flex;justify-content:space-between;margin-top:6px;font-size:11px;color:var(--text-light)}
+.termo-status{text-align:center}
+.termo-emoji{font-size:36px;margin-bottom:4px}
+.termo-status-txt{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700}
+.termo-evolucao{margin-top:1.5rem}
+.termo-evolucao-title{font-size:12px;font-weight:600;color:var(--text-med);letter-spacing:.04em;text-transform:uppercase;margin-bottom:.75rem}
+.evolucao-wrap{height:80px;position:relative}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1rem;margin-bottom:1.5rem}
+.stat-card{background:var(--branco);border-radius:12px;border:1px solid var(--borda);padding:1.1rem 1.25rem}
+.stat-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem}
+.stat-icon{font-size:18px}
+.stat-badge{font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px}
+.badge-p{background:var(--verde-light);color:var(--verde)}
+.badge-n{background:var(--amarelo-light);color:var(--amarelo)}
+.badge-d{background:var(--vermelho-light);color:var(--vermelho)}
+.stat-num{font-family:'Montserrat',sans-serif;font-size:26px;font-weight:800;color:var(--azul);line-height:1}
+.stat-label{font-size:12px;color:var(--text-med);margin-top:2px}
+.stat-sub{font-size:11px;color:var(--text-light);margin-top:3px}
+.charts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.25rem;margin-bottom:1.5rem}
+.chart-card{background:var(--branco);border-radius:12px;border:1px solid var(--borda);padding:1.4rem}
+.chart-card.full{grid-column:1/-1}
+.chart-title{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:var(--azul);margin-bottom:1.1rem;display:flex;align-items:center;gap:8px}
+.chart-title span{width:4px;height:14px;background:var(--roxo);border-radius:2px;display:inline-block}
+.chart-wrap{position:relative;height:200px}
+.chart-wrap.md{height:240px}
+.reunioes-wrap{background:var(--branco);border-radius:14px;border:1px solid var(--borda);padding:1.75rem;margin-bottom:1.5rem}
+.reunioes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.75rem;margin-top:1.25rem}
+.reuniao-card{border-radius:10px;border:1.5px solid var(--borda);padding:1rem 1.1rem;cursor:pointer;transition:.18s}
+.reuniao-card:hover{border-color:var(--roxo);background:var(--roxo-pale)}
+.reuniao-data{font-size:11px;color:var(--text-light);margin-bottom:3px}
+.reuniao-tema{font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;color:var(--azul);margin-bottom:.5rem}
+.reuniao-nps-num{font-family:'Montserrat',sans-serif;font-size:22px;font-weight:800}
+.reuniao-respostas{font-size:11px;color:var(--text-light);margin-top:3px}
+.comentarios-wrap{background:var(--branco);border-radius:14px;border:1px solid var(--borda);padding:1.75rem;margin-bottom:1.5rem}
+.comentarios-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:.75rem}
+.btn-classificar{background:linear-gradient(135deg,var(--azul),var(--roxo));color:white;border:none;border-radius:8px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:12px;padding:8px 16px;cursor:pointer;transition:opacity .2s;display:flex;align-items:center;gap:6px}
+.btn-classificar:hover{opacity:.9}
+.btn-classificar:disabled{opacity:.5;cursor:not-allowed}
+.temas-pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.25rem}
+.tema-pill{padding:5px 14px;border-radius:20px;border:1.5px solid var(--borda);background:transparent;font-family:'Open Sans',sans-serif;font-size:12px;font-weight:600;color:var(--text-med);cursor:pointer;transition:.15s;display:flex;align-items:center;gap:5px}
+.tema-pill:hover{border-color:var(--roxo);color:var(--roxo);background:var(--roxo-pale)}
+.tema-pill.ativo{background:var(--roxo);color:white;border-color:var(--roxo)}
+.tema-pill .cnt{background:rgba(255,255,255,0.3);border-radius:10px;padding:1px 6px;font-size:10px}
+.tema-pill:not(.ativo) .cnt{background:var(--borda);color:var(--text-med)}
+.comentarios-lista{display:flex;flex-direction:column;gap:.75rem;max-height:480px;overflow-y:auto;padding-right:4px}
+.comentarios-lista::-webkit-scrollbar{width:4px}
+.comentarios-lista::-webkit-scrollbar-thumb{background:var(--roxo-light);border-radius:2px}
+.comentario-item{background:var(--bg);border-radius:10px;padding:1rem 1.1rem;border-left:3px solid var(--roxo)}
+.comentario-meta{display:flex;align-items:center;gap:8px;margin-bottom:.5rem;flex-wrap:wrap}
+.comentario-data{font-size:11px;color:var(--text-light)}
+.comentario-tema-tag{font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--roxo-pale);color:var(--roxo)}
+.comentario-nps{font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px}
+.comentario-txt{font-size:13px;color:var(--text);line-height:1.6}
+.loading-ia{display:none;text-align:center;padding:2rem;color:var(--text-med);font-size:13px}
+.empty-state{text-align:center;padding:2.5rem 2rem;color:var(--text-light);font-size:14px}
+.loading-geral{text-align:center;padding:5rem 2rem;color:var(--text-med)}
+.spin{width:36px;height:36px;border:3px solid var(--borda);border-top-color:var(--roxo);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 1rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+.updated{font-size:12px;color:var(--text-light);text-align:right;margin-bottom:1rem}
+@media(max-width:640px){
+  main{padding:1rem 1rem 3rem}
+  .termometro-grid{grid-template-columns:1fr;text-align:center}
+  .stats-grid{grid-template-columns:1fr 1fr}
+  .charts-grid{grid-template-columns:1fr}
+  .h-top{height:auto;padding:10px 1rem}
+}
 </style>
 </head>
 <body>
 
-<div class="form-card">
-  <div class="form-header">
-    <div class="logo-area">
-      <div class="logo-circle">ACIRP<br>SJdRP</div>
-      <div class="header-text">
-        <div class="acirp">Acirp</div>
-        <div class="sub">São José do Rio Preto</div>
+<div class="header">
+  <div class="h-top">
+    <div class="logo-wrap">
+      <div class="logo-circle">CMEE<br>NPS</div>
+      <div class="logo-txt">
+        <b>Dashboard NPS · CMEE 2026</b>
+        <small>Conselho da Mulher Empresária e Empreendedora · Acirp</small>
       </div>
     </div>
-    <div class="cmee-badge">CMEE</div>
+    <div class="h-right">
+      <span class="badge-nps">Pesquisa de Satisfação</span>
+      <button class="btn-refresh" onclick="carregarDados()">↻ Atualizar</button>
+    </div>
   </div>
+  <div class="h-faixa">São José do Rio Preto · SP</div>
+</div>
 
-  <div class="form-title-bar">
-    <h1>Pesquisa de NPS</h1>
-    <div class="reuniao-info" id="reuniao-display">Reunião CMEE</div>
-  </div>
-
-  <div class="form-body" id="form-body">
-
-    <div class="form-section">
-      <div class="section-label"><span class="section-num">1</span>De 0 a 10, o quanto você recomendaria as reuniões do CMEE para outra empresária/empreendedora?</div>
-      <div class="nps-row" id="nps-buttons"></div>
-      <div class="nps-legend">
-        <span>😕 Não recomendaria</span>
-        <span>😊 Recomendaria muito</span>
-      </div>
-      <div class="error-msg" id="err-nps">Por favor, selecione uma nota.</div>
-    </div>
-
-    <div class="form-section">
-      <div class="section-label"><span class="section-num">2</span>O que mais agregou para você nesta reunião?</div>
-      <div class="options-grid" id="agrega-opts">
-        <button class="opt-btn" data-val="Conteúdo">Conteúdo</button>
-        <button class="opt-btn" data-val="Networking">Networking</button>
-        <button class="opt-btn" data-val="Dinâmica">Dinâmica</button>
-        <button class="opt-btn" data-val="Organização">Organização</button>
-        <button class="opt-btn" data-val="Troca de experiências">Troca de experiências</button>
-        <button class="opt-btn outro-trigger" data-val="Outro">Outro</button>
-      </div>
-      <input type="text" class="outro-input" id="outro-agrega" placeholder="Descreva o que mais agregou..." />
-      <div class="error-msg" id="err-agrega">Por favor, selecione uma opção.</div>
-    </div>
-
-    <div class="form-section">
-      <div class="section-label"><span class="section-num">3</span>Como você avalia a duração da reunião?</div>
-      <div class="options-grid" id="duracao-opts">
-        <button class="opt-btn" data-val="Muito longa">Muito longa</button>
-        <button class="opt-btn" data-val="Adequada">Adequada</button>
-        <button class="opt-btn" data-val="Muito curta">Muito curta</button>
-      </div>
-      <div class="error-msg" id="err-duracao">Por favor, selecione uma opção.</div>
-    </div>
-
-    <div class="form-section">
-      <div class="section-label"><span class="section-num">4</span>Você saiu da reunião com alguma ação prática ou insight aplicável?</div>
-      <div class="options-grid" id="insight-opts">
-        <button class="opt-btn" data-val="Sim">Sim</button>
-        <button class="opt-btn" data-val="Não">Não</button>
-        <button class="opt-btn" data-val="Parcialmente">Parcialmente</button>
-      </div>
-      <div class="error-msg" id="err-insight">Por favor, selecione uma opção.</div>
-    </div>
-
-    <div class="form-section">
-      <div class="section-label"><span class="section-num">5</span>Gostaria de compartilhar alguma sugestão, crítica, ideia ou percepção sobre esta reunião?</div>
-      <textarea class="textarea-field" id="comentario" placeholder="Escreva à vontade. Sua opinião é muito importante para o CMEE!"></textarea>
-    </div>
-
-    <button class="submit-btn" id="submit-btn" onclick="submitForm()">Enviar minha avaliação</button>
-  </div>
-
-  <div class="success-msg" id="success-msg">
-    <div class="check">💙</div>
-    <h2>Obrigada pela sua participação!</h2>
-    <p>Sua avaliação foi registrada com sucesso.<br>Juntas, fazemos o CMEE cada vez melhor.</p>
+<div class="filtro-bar">
+  <div class="filtro-inner">
+    <span class="filtro-label">Reunião:</span>
+    <div class="filtro-pills" id="filtro-pills"></div>
   </div>
 </div>
 
+<main>
+  <div id="loading-geral" class="loading-geral">
+    <div class="spin"></div>
+    <p>Carregando dados...</p>
+  </div>
+
+  <div id="conteudo" style="display:none">
+    <div class="updated" id="updated"></div>
+
+    <!-- TERMÔMETRO -->
+    <div class="termometro-wrap">
+      <div class="termometro-header">
+        <div class="sec-titulo"><span></span>Termômetro do Grupo</div>
+        <div id="termo-periodo" style="font-size:12px;color:var(--text-med)"></div>
+      </div>
+      <div class="termometro-grid">
+        <div class="termo-gauge">
+          <div class="termo-score" id="termo-score">--</div>
+          <div class="termo-label">NPS Médio</div>
+        </div>
+        <div>
+          <div class="termo-barra-bg">
+            <div class="termo-barra-marker" id="termo-marker" style="left:50%"></div>
+          </div>
+          <div class="termo-barra-labels">
+            <span>Detratoras (0-6)</span>
+            <span>Neutras (7-8)</span>
+            <span>Promotoras (9-10)</span>
+          </div>
+          <div class="termo-evolucao">
+            <div class="termo-evolucao-title">Evolução por reunião</div>
+            <div class="evolucao-wrap"><canvas id="chart-evolucao"></canvas></div>
+          </div>
+        </div>
+        <div class="termo-status">
+          <div class="termo-emoji" id="termo-emoji">🌡️</div>
+          <div class="termo-status-txt" id="termo-status-txt" style="color:var(--text-med)">--</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-top"><span class="stat-icon">📊</span></div>
+        <div class="stat-num" id="s-total">0</div>
+        <div class="stat-label">Respostas</div>
+        <div class="stat-sub" id="s-reunioes-n"></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-top"><span class="stat-icon">😊</span><span class="stat-badge badge-p">Promotoras</span></div>
+        <div class="stat-num" id="s-prom" style="color:var(--verde)">0</div>
+        <div class="stat-label">Nota 9 ou 10</div>
+        <div class="stat-sub" id="s-prom-pct"></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-top"><span class="stat-icon">😐</span><span class="stat-badge badge-n">Neutras</span></div>
+        <div class="stat-num" id="s-neut" style="color:var(--amarelo)">0</div>
+        <div class="stat-label">Nota 7 ou 8</div>
+        <div class="stat-sub" id="s-neut-pct"></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-top"><span class="stat-icon">😕</span><span class="stat-badge badge-d">Detratoras</span></div>
+        <div class="stat-num" id="s-detr" style="color:var(--vermelho)">0</div>
+        <div class="stat-label">Nota 0 a 6</div>
+        <div class="stat-sub" id="s-detr-pct"></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-top"><span class="stat-icon">⏱️</span></div>
+        <div class="stat-num" id="s-dur" style="font-size:16px;margin-top:4px">--</div>
+        <div class="stat-label">Duração mais citada</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-top"><span class="stat-icon">💡</span></div>
+        <div class="stat-num" id="s-insight">0</div>
+        <div class="stat-label">Saíram com insight</div>
+        <div class="stat-sub" id="s-insight-pct"></div>
+      </div>
+    </div>
+
+    <!-- GRÁFICOS -->
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-title"><span></span>Distribuição das notas</div>
+        <div class="chart-wrap md"><canvas id="chart-notas"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title"><span></span>O que mais agregou</div>
+        <div class="chart-wrap md"><canvas id="chart-agrega"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title"><span></span>Avaliação da duração</div>
+        <div class="chart-wrap"><canvas id="chart-duracao"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title"><span></span>Saiu com insight?</div>
+        <div class="chart-wrap"><canvas id="chart-insight"></canvas></div>
+      </div>
+    </div>
+
+    <!-- COMPARATIVO -->
+    <div class="reunioes-wrap" id="reunioes-wrap" style="display:none">
+      <div class="sec-titulo"><span></span>Comparativo por reunião</div>
+      <div class="reunioes-grid" id="reunioes-grid"></div>
+    </div>
+
+    <!-- COMENTÁRIOS -->
+    <div class="comentarios-wrap">
+      <div class="comentarios-header">
+        <div class="sec-titulo"><span></span>Análise de Comentários com IA</div>
+        <button class="btn-classificar" id="btn-ia" onclick="mostrarComentarios()">↻ Atualizar</button>
+      </div>
+      <div id="temas-pills" class="temas-pills"></div>
+      <div class="comentarios-lista" id="comentarios-lista">
+        <div class="empty-state">Carregando comentários...</div>
+      </div>
+    </div>
+  </div>
+</main>
+
 <script>
-// ============================================================
-// CONFIGURAÇÃO — substitua pela URL do seu Google Apps Script
-// ============================================================
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxARmm7YDyCI8J-DvKBT9olQfx3wXYhwNy7bdD44GBYKpz1U1_XKFIfBXyesm-5K38AeA/exec';
-// ============================================================
 
-let npsVal = null, agregaVal = null, duracaoVal = null, insightVal = null;
+let dadosGlobais = [], dadosFiltrados = [], filtroAtivo = 'todas';
+let comentariosClass = null, charts = {};
 
-function getParam(name) {
-  return new URLSearchParams(window.location.search).get(name);
+function carregarDados() {
+  document.getElementById('loading-geral').style.display = 'block';
+  document.getElementById('conteudo').style.display = 'none';
+
+  const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(SCRIPT_URL);
+
+  fetch(proxyUrl)
+    .then(r => r.json())
+    .then(res => {
+      const data = JSON.parse(res.contents);
+      dadosGlobais = data.map(d => ({
+        data:       d.data      || d['Data']      || '',
+        tema:       String(d.tema || d['Tema'] || '').toLowerCase().trim(),
+        nps:        Number(d.nps  || d['NPS']  || 0),
+        agrega:     d.agrega    || d['O que agregou'] || '',
+        duracao:    d.duracao   || d['Duração'] || '',
+        insight:    d.insight   || d['Insight'] || '',
+        comentario: d.comentario|| d['Comentário'] || '',
+        timestamp:  d.timestamp || d['Timestamp'] || '',
+        temaIA:     d.temaIA    || d['Tema IA'] || '',
+        dataFmt:    fmtData(String(d.data || d['Data'] || ''))
+      }));
+      construirFiltros();
+      aplicarFiltro('todas');
+      document.getElementById('updated').textContent = 'Última atualização: ' + new Date().toLocaleString('pt-BR');
+      document.getElementById('loading-geral').style.display = 'none';
+      document.getElementById('conteudo').style.display = 'block';
+    })
+    .catch(() => {
+      document.getElementById('loading-geral').innerHTML = '<p style="color:var(--vermelho)">Erro ao carregar dados. Verifique a URL do script.</p>';
+    });
 }
 
-function formatDate(d) {
+function fmtData(d) {
   if (!d) return '';
-  const p = d.split('-');
-  return p.length === 3 ? p[2]+'/'+p[1]+'/'+p[0] : d;
+  try {
+    const dt = new Date(d);
+    if (!isNaN(dt)) {
+      return String(dt.getDate()).padStart(2,'0')+'/'+String(dt.getMonth()+1).padStart(2,'0')+'/'+dt.getFullYear();
+    }
+  } catch(e) {}
+  const p = String(d).split('-');
+  if (p.length === 3 && p[0].length === 4) return p[2]+'/'+p[1]+'/'+p[0];
+  return String(d);
 }
 
-const urlDate = getParam('data');
-const urlTema = getParam('tema');
-
-if (urlDate || urlTema) {
-  let txt = 'Reunião CMEE';
-  if (urlDate) txt += ' — ' + formatDate(urlDate);
-  if (urlTema) txt += ' | ' + decodeURIComponent(urlTema);
-  document.getElementById('reuniao-display').textContent = txt;
+function construirFiltros() {
+  const r = {};
+  dadosGlobais.forEach(d => {
+    const k = d.data+'|'+(d.tema||'');
+    if (!r[k]) r[k] = { dataFmt: d.dataFmt, tema: d.tema||'', count: 0 };
+    r[k].count++;
+  });
+  const pills = document.getElementById('filtro-pills');
+  pills.innerHTML = '';
+  pills.appendChild(mkPill('todas','Todas ('+dadosGlobais.length+')',true));
+  Object.entries(r).sort((a,b)=>b[0].localeCompare(a[0])).forEach(([k,v])=>{
+    const lbl = v.dataFmt + (v.tema?' · '+v.tema:'') + ' ('+v.count+')';
+    pills.appendChild(mkPill(k, lbl, false));
+  });
+  document.getElementById('reunioes-wrap').style.display = Object.keys(r).length > 1 ? 'block' : 'none';
+  renderComparativo(r);
 }
 
-const npsRow = document.getElementById('nps-buttons');
-for (let i = 0; i <= 10; i++) {
-  const btn = document.createElement('button');
-  btn.className = 'nps-btn';
-  btn.textContent = i;
-  btn.onclick = () => {
-    document.querySelectorAll('.nps-btn').forEach(b => b.className = 'nps-btn');
-    npsVal = i;
-    btn.classList.add(i <= 6 ? 'sel-red' : i <= 8 ? 'sel-yellow' : 'sel-green');
-    document.getElementById('err-nps').style.display = 'none';
-  };
-  npsRow.appendChild(btn);
+function mkPill(val, lbl, ativo) {
+  const b = document.createElement('button');
+  b.className = 'pill'+(ativo?' ativo':'');
+  b.dataset.val = val; b.textContent = lbl;
+  b.onclick = () => aplicarFiltro(val);
+  return b;
 }
 
-function setupSingle(id, setter, errId) {
-  document.getElementById(id).querySelectorAll('.opt-btn').forEach(btn => {
-    btn.onclick = () => {
-      document.getElementById(id).querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
-      btn.classList.add('selected');
-      setter(btn.dataset.val);
-      document.getElementById(errId).style.display = 'none';
-      if (id === 'agrega-opts') {
-        document.getElementById('outro-agrega').style.display =
-          btn.classList.contains('outro-trigger') ? 'block' : 'none';
-      }
-    };
+function aplicarFiltro(val) {
+  filtroAtivo = val;
+  document.querySelectorAll('.pill').forEach(p => p.classList.toggle('ativo', p.dataset.val===val));
+  dadosFiltrados = val==='todas' ? dadosGlobais : dadosGlobais.filter(d => {
+    const [dt,tm] = val.split('|');
+    return d.data==dt && (d.tema||'')===tm;
+  });
+  const lbl = val==='todas' ? 'Todas as reuniões · '+dadosGlobais.length+' respostas'
+    : (dadosFiltrados[0]?.dataFmt||'') + (dadosFiltrados[0]?.tema?' · '+dadosFiltrados[0].tema:'');
+  document.getElementById('termo-periodo').textContent = lbl;
+  comentariosClass = null;
+  document.getElementById('temas-pills').innerHTML = '';
+  document.getElementById('btn-ia').disabled = false;
+  document.getElementById('btn-ia').textContent = '↻ Atualizar';
+  renderMetricas(dadosFiltrados);
+  mostrarComentarios();
+}
+
+function renderMetricas(d) {
+  const n = d.length; if (!n) return;
+  const prom = d.filter(x=>x.nps>=9).length;
+  const neut = d.filter(x=>x.nps>=7&&x.nps<=8).length;
+  const detr = d.filter(x=>x.nps<=6).length;
+  const media = (d.reduce((s,x)=>s+x.nps,0)/n).toFixed(1);
+  const pct = v => '('+Math.round((v/n)*100)+'%)';
+
+  document.getElementById('termo-score').textContent = media;
+  setTimeout(()=>{ document.getElementById('termo-marker').style.left = (parseFloat(media)/10*100)+'%'; },100);
+
+  let emoji,txt,cor;
+  if (media>=9){emoji='🔥';txt='Excelente';cor='var(--verde)'}
+  else if(media>=7){emoji='😊';txt='Bom';cor='var(--amarelo)'}
+  else if(media>=5){emoji='😐';txt='Regular';cor='var(--amarelo)'}
+  else{emoji='❄️';txt='Atenção';cor='var(--vermelho)'}
+  document.getElementById('termo-emoji').textContent=emoji;
+  document.getElementById('termo-status-txt').textContent=txt;
+  document.getElementById('termo-status-txt').style.color=cor;
+  document.getElementById('termo-score').style.color=cor;
+
+  document.getElementById('s-total').textContent=n;
+  document.getElementById('s-reunioes-n').textContent=[...new Set(d.map(x=>x.data))].length+' reunião(ões)';
+  document.getElementById('s-prom').textContent=prom;
+  document.getElementById('s-prom-pct').textContent=pct(prom);
+  document.getElementById('s-neut').textContent=neut;
+  document.getElementById('s-neut-pct').textContent=pct(neut);
+  document.getElementById('s-detr').textContent=detr;
+  document.getElementById('s-detr-pct').textContent=pct(detr);
+
+  const dur=contarPor(d,'duracao');
+  const durTop=Object.entries(dur).sort((a,b)=>b[1]-a[1])[0];
+  document.getElementById('s-dur').textContent=durTop?durTop[0]:'--';
+
+  const sim=d.filter(x=>String(x.insight).toLowerCase()==='sim').length;
+  document.getElementById('s-insight').textContent=sim;
+  document.getElementById('s-insight-pct').textContent=pct(sim);
+
+  const nl=['0','1','2','3','4','5','6','7','8','9','10'];
+  const nv=nl.map(x=>d.filter(y=>y.nps===parseInt(x)).length);
+  const nc=nl.map(x=>parseInt(x)<=6?'#C0392B':parseInt(x)<=8?'#E67E22':'#27AE60');
+  mkChart('chart-notas','bar',nl,nv,nc,false);
+
+  const ag=contarPor(d,'agrega');
+  mkChart('chart-agrega','bar',Object.keys(ag),Object.values(ag),['#6B2D8B'],true);
+
+  const du=contarPor(d,'duracao');
+  mkChart('chart-duracao','doughnut',Object.keys(du),Object.values(du),['#003C7E','#27AE60','#C0392B']);
+
+  const ins=contarPor(d,'insight');
+  mkChart('chart-insight','doughnut',Object.keys(ins),Object.values(ins),['#27AE60','#E67E22','#C0392B']);
+
+  renderEvolucao();
+}
+
+function renderEvolucao() {
+  const r={};
+  dadosGlobais.forEach(d=>{
+    const k=d.dataFmt+(d.tema?'\n'+d.tema:'');
+    if(!r[k])r[k]=[];
+    r[k].push(d.nps);
+  });
+  const labels=Object.keys(r).sort((a,b)=>{
+    const pa=a.split('\n')[0].split('/'), pb=b.split('\n')[0].split('/');
+    return new Date(pa[2],pa[1]-1,pa[0])-new Date(pb[2],pb[1]-1,pb[0]);
+  });
+  const medias=labels.map(k=>(r[k].reduce((s,v)=>s+v,0)/r[k].length).toFixed(1));
+  if(charts['evo'])charts['evo'].destroy();
+  charts['evo']=new Chart(document.getElementById('chart-evolucao').getContext('2d'),{
+    type:'line',
+    data:{labels:labels.map(l=>l.split('\n')[0]),datasets:[{data:medias,borderColor:'#6B2D8B',backgroundColor:'rgba(107,45,139,0.1)',borderWidth:2.5,pointBackgroundColor:'#6B2D8B',pointRadius:4,tension:0.4,fill:true}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:10,grid:{color:'rgba(0,0,0,0.05)'},ticks:{font:{size:10},stepSize:2}},x:{grid:{display:false},ticks:{font:{size:10}}}}}
   });
 }
 
-setupSingle('agrega-opts',  v => agregaVal  = v, 'err-agrega');
-setupSingle('duracao-opts', v => duracaoVal = v, 'err-duracao');
-setupSingle('insight-opts', v => insightVal = v, 'err-insight');
-
-function submitForm() {
-  let valid = true;
-  if (npsVal === null) { document.getElementById('err-nps').style.display='block'; valid=false; }
-  if (!agregaVal)      { document.getElementById('err-agrega').style.display='block'; valid=false; }
-  if (!duracaoVal)     { document.getElementById('err-duracao').style.display='block'; valid=false; }
-  if (!insightVal)     { document.getElementById('err-insight').style.display='block'; valid=false; }
-  if (!valid) return;
-
-  const btn = document.getElementById('submit-btn');
-  btn.disabled = true;
-  btn.textContent = 'Enviando...';
-
-  const outroTxt = document.getElementById('outro-agrega').value;
-  const payload = {
-    data:       urlDate || new Date().toISOString().split('T')[0],
-    tema:       urlTema ? decodeURIComponent(urlTema) : '',
-    nps:        npsVal,
-    agrega:     agregaVal === 'Outro' ? 'Outro: ' + outroTxt : agregaVal,
-    duracao:    duracaoVal,
-    insight:    insightVal,
-    comentario: document.getElementById('comentario').value,
-    timestamp:  new Date().toISOString()
-  };
-
-  fetch(SCRIPT_URL, {
-    method: 'POST',
-    mode: 'no-cors',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  }).finally(() => {
-    document.getElementById('form-body').style.display = 'none';
-    document.getElementById('success-msg').style.display = 'block';
+function renderComparativo(r) {
+  const grid=document.getElementById('reunioes-grid');
+  grid.innerHTML='';
+  Object.entries(r).sort((a,b)=>b[0].localeCompare(a[0])).forEach(([k,v])=>{
+    const res=dadosGlobais.filter(d=>{const[dt,tm]=k.split('|');return d.data==dt&&(d.tema||'')===tm;});
+    const media=res.length?(res.reduce((s,d)=>s+d.nps,0)/res.length).toFixed(1):'--';
+    const cor=parseFloat(media)<5?'#C0392B':parseFloat(media)<7?'#E67E22':'#27AE60';
+    const card=document.createElement('div');
+    card.className='reuniao-card';
+    card.innerHTML=`<div class="reuniao-data">${v.dataFmt}</div><div class="reuniao-tema">${v.tema||'Reunião CMEE'}</div><div style="display:flex;align-items:center;gap:8px"><div class="reuniao-nps-num" style="color:${cor}">${media}</div><div style="font-size:11px;color:var(--text-med)">NPS médio</div></div><div class="reuniao-respostas">${v.count} resposta${v.count!==1?'s':''}</div>`;
+    card.onclick=()=>aplicarFiltro(k);
+    grid.appendChild(card);
   });
 }
+
+function mostrarComentarios() {
+  // Pega comentários dos dados filtrados, já com temaIA da planilha
+  const lista = dadosFiltrados
+    .filter(d => d.comentario && String(d.comentario).trim().length > 3)
+    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)) // mais recentes primeiro
+    .map(d => ({
+      texto: d.comentario,
+      tema: d.temaIA || 'Sem classificação',
+      nps: d.nps,
+      data: d.dataFmt
+    }));
+
+  if (!lista.length) {
+    document.getElementById('comentarios-lista').innerHTML = '<div class="empty-state">Nenhum comentário disponível.</div>';
+    document.getElementById('temas-pills').innerHTML = '';
+    return;
+  }
+
+  renderComentarios(lista, 'todos');
+}
+
+function renderComentarios(lista,tema) {
+  const counts={};
+  lista.forEach(c=>{counts[c.tema]=(counts[c.tema]||0)+1;});
+  const pe=document.getElementById('temas-pills');
+  pe.style.display='flex'; pe.innerHTML='';
+  const bt=document.createElement('button');
+  bt.className='tema-pill'+(tema==='todos'?' ativo':'');
+  bt.innerHTML='Todos <span class="cnt">'+lista.length+'</span>';
+  bt.onclick=()=>renderComentarios(lista,'todos');
+  pe.appendChild(bt);
+  Object.entries(counts).sort((a,b)=>b[1]-a[1]).forEach(([t,c])=>{
+    const b=document.createElement('button');
+    b.className='tema-pill'+(tema===t?' ativo':'');
+    b.innerHTML=t+' <span class="cnt">'+c+'</span>';
+    b.onclick=()=>renderComentarios(lista,t);
+    pe.appendChild(b);
+  });
+  const filtrada=tema==='todos'?lista:lista.filter(c=>c.tema===tema);
+  const el=document.getElementById('comentarios-lista');
+  if(!filtrada.length){el.innerHTML='<div class="empty-state">Nenhum comentário neste tema.</div>';return;}
+  const cn=n=>n>=9?'var(--verde)':n>=7?'var(--amarelo)':'var(--vermelho)';
+  el.innerHTML=filtrada.map(c=>`
+    <div class="comentario-item">
+      <div class="comentario-meta">
+        <span class="comentario-data">${c.data||''}</span>
+        <span class="comentario-tema-tag">${c.tema}</span>
+        ${c.nps!==undefined?`<span class="comentario-nps" style="background:${cn(c.nps)}22;color:${cn(c.nps)}">NPS ${c.nps}</span>`:''}
+      </div>
+      <div class="comentario-txt">${c.texto}</div>
+    </div>`).join('');
+  document.getElementById('btn-ia').textContent='↻ Reclassificar';
+  document.getElementById('btn-ia').disabled=false;
+}
+
+function contarPor(d,campo){const c={};d.forEach(x=>{const v=x[campo]||'N/A';c[v]=(c[v]||0)+1;});return c;}
+
+function mkChart(id,tipo,labels,valores,cores,horizontal){
+  if(charts[id])charts[id].destroy();
+  const ctx=document.getElementById(id).getContext('2d');
+  const bg=cores.length===1?labels.map(()=>cores[0]):labels.map((_,i)=>cores[i%cores.length]);
+  charts[id]=new Chart(ctx,{
+    type:tipo,
+    data:{labels,datasets:[{data:valores,backgroundColor:bg,borderWidth:tipo==='doughnut'?2:0,borderColor:'#fff',borderRadius:tipo==='bar'?6:0}]},
+    options:{indexAxis:horizontal?'y':'x',responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:tipo==='doughnut',position:'bottom',labels:{font:{family:'Open Sans',size:11},padding:10,boxWidth:12}}},
+      scales:tipo==='bar'?{x:{grid:{display:!horizontal},ticks:{font:{size:11}}},y:{grid:{display:horizontal,color:'rgba(0,0,0,0.05)'},ticks:{font:{size:11},stepSize:1}}}:{}}
+  });
+}
+
+carregarDados();
 </script>
 </body>
 </html>
